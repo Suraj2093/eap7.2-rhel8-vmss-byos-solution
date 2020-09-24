@@ -177,7 +177,7 @@
                         "visible": "[equals(steps('VirtualMachineScaleSetConfig').bootDiagnostics, 'On')]",
                         "defaultValue": {
                             "type": "Standard_LRS",
-                            "name": "[concat(toLower(take(replace(basics('vmssName0'), '-', ''), 8)), take(replace(guid(), '-', ''), 10))]"
+                            "name": "[concat(toLower(take(replace(basics('vmssName'), '-', ''), 8)), take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
                             "allowedTypes": [
