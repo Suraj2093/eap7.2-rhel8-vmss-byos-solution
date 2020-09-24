@@ -203,26 +203,8 @@
                 "description": "Password for JBoss EAP Manager"
             }
         },
-        "rhsmUserName": {
-            "type": "string",
-            "metadata": {
-                "description": "User name for RedHat subscription Manager"
-            }
-        },
-        "rhsmPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Password for RedHat subscription Manager"
-            }
-        },
-        "rhsmPoolEAP": {
-            "type": "string",
-            "metadata": {
-                "description": "RedHat Subscription Manager Pool ID (Should have EAP entitlement)"
-            }
-        },
         "_artifactsLocation": {
-            "defaultValue": "https://raw.githubusercontent.com/Suraj2093/eap7.2-rhel8-vmss-payg-solution/master/my-offer/",
+            "defaultValue": "https://raw.githubusercontent.com/Suraj2093/eap7.2-rhel8-vmss-byos-solution/master/my-offer/",
             "type": "String",
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated"
@@ -330,6 +312,11 @@
                 "tier": "Standard",
                 "capacity": "[parameters('instanceCount')]"
             },
+            "plan": {
+                "name": "jboss-72-rhel-80-byos",
+                "publisher": "redhat",
+                "product": "jboss-eap72-rhel8"
+            },
             "dependsOn": [
                 "[variables('loadBalancersName')]",
                 "[parameters('virtualNetworkName')]",
@@ -349,8 +336,8 @@
                         },
                         "imageReference": {
                             "publisher": "redhat",
-                            "offer": "RHEL",
-                            "sku": "8",
+                            "offer": "jboss-eap72-rhel8",
+                            "sku": "jboss-72-rhel-80-byos",
                             "version": "latest"
                         }
                     },
@@ -409,7 +396,7 @@
                                     ]
                                 },
                                 "protectedSettings": {
-                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'),' ', parameters('rhsmUserName'),' ', variables('singlequote'), parameters('rhsmPassword'), variables('singlequote'),' ', parameters('rhsmPoolEAP'),' ', variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', variables('singlequote'))]"
+                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'), variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', variables('singlequote'))]"
                                 }
                             }
                         }
