@@ -1,0 +1,543 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Location for all resources"
+            }
+        },
+        "vmssName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Virtual Machine Scale Set"
+            }
+        },
+        "adminUsername": {
+            "type": "String",
+            "metadata": {
+                "description": "Linux VMSS instance user account name"
+            }
+        },
+        "authenticationType": {
+            "defaultValue": "password",
+            "allowedValues": [
+                "password",
+                "sshPublicKey"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Type of authentication to use on the VMSS instance"
+            }
+        },
+        "adminPasswordOrSSHKey": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password or SSH key for the VMSS instance"
+            }
+        },
+        "vmSize": {
+            "defaultValue": "Standard_DS2_v2",
+            "type": "String",
+            "metadata": {
+                "description": "Virtual machine scale set instance size"
+            }
+        },
+        "instanceCount": {
+            "type": "int",
+            "metadata": {
+                "description": "Number of VM instances (less than 100)"
+            },
+            "maxValue": 99,
+            "minValue": 2,
+            "defaultValue": 2
+        },
+        "bootDiagnostics": {
+            "defaultValue": "On",
+            "allowedValues": [
+                "Off",
+                "On"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Capture serial console outputs and screenshots of the VMSS instance running on a host to help diagnose startup issues"
+            }
+        },
+        "storageNewOrExisting": {
+            "defaultValue": "new",
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new storage account should be provisioned."
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storage', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the storage account"
+            }
+        },
+        "storageAccountType": {
+            "defaultValue": "Standard_LRS",
+            "type": "String",
+            "metadata": {
+                "description": "Storage account type"
+            }
+        },
+        "storageReplication": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Select the Storage Replication Strategy for the Storage account used for clustering"
+            }
+        },
+        "virtualNetworkNewOrExisting": {
+            "defaultValue": "new",
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new virtual network should be provisioned."
+            }
+        },
+        "virtualNetworkName": {
+            "defaultValue": "VirtualNetwork",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the virtual network"
+            }
+        },
+        "addressPrefixes": {
+            "defaultValue": [
+                "10.0.0.0/16"
+            ],
+            "type": "Array",
+            "metadata": {
+                "description": "Address prefix of the virtual network"
+            }
+        },
+        "subnetName": {
+            "defaultValue": "default",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the subnet"
+            }
+        },
+        "subnetPrefix": {
+            "defaultValue": "10.0.0.0/24",
+            "type": "String",
+            "metadata": {
+                "description": "Subnet prefix of the virtual network"
+            }
+        },
+        "virtualNetworkResourceGroupName": {
+            "defaultValue": "[resourceGroup().name]",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the resource group for the existing virtual network"
+            }
+        },
+        "publicIpNewOrExisting": {
+            "defaultValue": "new",
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new public ip should be provisioned."
+            }
+        },
+        "publicIpName": {
+            "defaultValue": "PublicIp",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the public ip address"
+            }
+        },
+        "publicIpDns": {
+            "defaultValue": "[concat('jbosseap-server', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "DNS of the public ip address for the VM"
+            }
+        },
+        "publicIPAllocationMethod": {
+            "defaultValue": "Dynamic",
+            "allowedValues": [
+                "Dynamic",
+                "Static"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Allocation method for the public ip address"
+            }
+        },
+        "publicIpSku": {
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Name of the resource group for the public ip address"
+            }
+        },
+        "jbossEAPUserName": {
+            "type": "String",
+            "metadata": {
+                "description": "User name for JBoss EAP Manager"
+            }
+        },
+        "jbossEAPPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for JBoss EAP Manager"
+            }
+        },
+        "rhsmUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "User name for RedHat subscription Manager"
+            }
+        },
+        "rhsmPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for RedHat subscription Manager"
+            }
+        },
+        "rhsmPoolEAP": {
+            "type": "string",
+            "metadata": {
+                "description": "RedHat Subscription Manager Pool ID (Should have EAP entitlement)"
+            }
+        },
+        "_artifactsLocation": {
+            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "type": "String",
+            "metadata": {
+                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "defaultValue": "",
+            "type": "SecureString",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated"
+            }
+        }
+    },
+    "variables": {
+        "scriptFileName": "jbosseap-setup-redhat.sh",
+        "containerName": "eapblobcontainer",
+        "singlequote": "'",
+        "scriptStart": "su -c'sh ",
+        "customScriptCommand": "[concat(variables('scriptStart'), variables('scriptFileName'), ' ')]",
+        "nicName": "[concat(uniquestring(resourceGroup().id), '-nic')]",
+        "bootdiagnosticscheck": "[and(equals(parameters('storageNewOrExisting'), 'new'), equals(parameters('bootDiagnostics'),'On'))]",
+        "storageAccountName": "[concat('jbosstrg', uniqueString(resourceGroup().id))]",
+        "publicIPAddresslb": "lbpip",
+        "publicIPAddresslbDNSName" : "[concat('piplb-', uniqueString(resourceGroup().id))]",
+        "publicIPAddressType": "Dynamic",
+        "loadBalancersName": "jbosseap-lb",
+        "backendPoolName": "jbosseap-server",
+        "natPoolName1": "natpool1",
+        "natPoolName2": "natpool2",
+        "frontendName" : "LoadBalancerFrontEnd",
+        "natStartPort1": 50000,
+        "natEndPort1": 50120,
+        "natBackendPort": 22,
+        "natStartPort2": 9000,
+        "natEndPort2": 9120,
+        "adminBackendPort": 9990,
+        "healthProbe" : "eap-lb-health",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminPasswordOrSSHKey')]"
+                    }
+                ]
+            }
+        }
+    },
+    "resources": [
+        {
+            "condition": "[variables('bootdiagnosticscheck')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "kind": "Storage"
+        },
+        {
+            "condition": "[equals(parameters('publicIpNewOrExisting'), 'new')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('publicIpName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('publicIpSku')]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('publicIpDns')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "name": "[variables('publicIPAddresslb')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(variables('publicIPAddresslbDNSName'))]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('virtualNetworkNewOrExisting'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "apiVersion": "2019-07-01",
+            "name": "[parameters('vmssName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('vmSize')]",
+                "tier": "Standard",
+                "capacity": "[parameters('instanceCount')]"
+            },
+            "dependsOn": [
+                "[variables('loadBalancersName')]",
+                "[parameters('virtualNetworkName')]",
+                "[variables('storageAccountName')]",
+                "[if(equals(parameters('bootDiagnostics'),'On'), parameters('storageAccountName'), parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "overprovision": "false",
+                "upgradePolicy": {
+                    "mode": "Manual"
+                },
+                "virtualMachineProfile": {
+                    "storageProfile": {
+                        "osDisk": {
+                            "createOption": "FromImage",
+                            "caching": "ReadWrite"
+                        },
+                        "imageReference": {
+                            "publisher": "redhat",
+                            "offer": "RHEL",
+                            "sku": "8",
+                            "version": "latest"
+                        }
+                    },
+                    "osProfile": {
+                        "computerNamePrefix": "[parameters('vmssName')]",
+                        "adminUsername": "[parameters('adminUsername')]",
+                        "adminPassword": "[parameters('adminPasswordOrSSHKey')]",
+                        "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                    },
+                    "networkProfile": {
+                        "networkInterfaceConfigurations": [
+                        {
+                            "name": "[variables('nicName')]",
+                            "properties": {
+                                "primary": true,
+                                "ipConfigurations": [
+                                {
+                                    "name": "ipconfig",
+                                    "properties": {
+                                        "subnet": {
+                                            "id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                                        },
+                                        "loadBalancerBackendAddressPools": [
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancersName'), variables('backendPoolName'))]"
+                                        }
+                                        ],
+                                        "loadBalancerInboundNatPools": [
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatPools', variables('loadBalancersName'), variables('natPoolName1'))]"
+                                        },
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatPools', variables('loadBalancersName'), variables('natPoolName2'))]"
+                                        }
+                                        ]
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                        ]
+                    },
+                    "diagnosticsProfile": "[if(equals(parameters('bootDiagnostics'),'On'), json(concat('{\"bootDiagnostics\": {\"enabled\": true,\"storageUri\": \"https://', parameters('storageAccountName'), '.blob.core.windows.net', '\"}}')), json(concat('{\"bootDiagnostics\": {\"enabled\": false}}')))]",
+                    "extensionProfile": {
+                        "extensions": [
+                        {
+                            "name": "jbosseap-setup-extension",
+                            "properties": {
+                                "publisher": "Microsoft.Azure.Extensions",
+                                "type": "CustomScript",
+                                "typeHandlerVersion": "2.0",
+                                "autoUpgradeMinorVersion": true,
+                                "settings": {
+                                    "fileUris": [
+                                        "[uri(parameters('_artifactsLocation'), concat('scripts/jbosseap-setup-redhat.sh', parameters('_artifactsLocationSasToken')))]"
+                                    ]
+                                },
+                                "protectedSettings": {
+                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'),' ', parameters('rhsmUserName'),' ', variables('singlequote'), parameters('rhsmPassword'), variables('singlequote'),' ', parameters('rhsmPoolEAP'),' ', variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', variables('singlequote'))]"
+                                }
+                            }
+                        }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/loadBalancers",
+            "apiVersion": "2019-11-01",
+            "name": "[variables('loadBalancersName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('publicIPAddresslb')]"
+            ],
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                {
+                    "name": "[variables('frontendName')]",
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddresslb'))]"
+                        },
+                        "privateIPAddressVersion": "IPv4"
+                    }
+ 
+                }
+                ],
+                "backendAddressPools": [
+                {
+                    "name": "[variables('backendPoolName')]"
+                }
+                ],
+                "inboundNatPools": [
+                {
+                    "name": "[variables('natPoolName1')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('loadBalancersName'), variables('frontendName'))]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPortRangeStart": "[variables('natStartPort1')]",
+                        "frontendPortRangeEnd": "[variables('natEndPort1')]",
+                        "backendPort": "[variables('natBackendPort')]"
+                    }
+                },
+                {
+                    "name": "[variables('natPoolName2')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('loadBalancersName'), variables('frontendName'))]"
+                        },
+                        "protocol": "Tcp",
+                        "frontendPortRangeStart": "[variables('natStartPort2')]",
+                        "frontendPortRangeEnd": "[variables('natEndPort2')]",
+                        "backendPort": "[variables('adminBackendPort')]"
+                    }
+                }
+                ],
+                "loadBalancingRules": [
+                {
+                    "name": "[concat(variables('loadBalancersName'), '-rule')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('loadBalancersName'), variables('frontendName'))]"
+                        },
+                        "frontendPort": 80,
+                        "backendPort": 8080,
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 5,
+                        "protocol": "Tcp",
+                        "enableTcpReset": false,
+                        "backendAddressPool": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancersName'), variables('backendPoolName'))]"
+                        },
+                        "probe": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('loadBalancersName'), variables('healthProbe'))]"
+                        }
+                    }
+                }
+                ],
+                "probes": [
+                {
+                    "name": "[variables('healthProbe')]",
+                    "properties": {
+                        "protocol": "Tcp",
+                        "port": 8080,
+                        "intervalInSeconds": 5,
+                        "numberOfProbes": 2
+                    }
+                }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageReplication')]"
+            },
+            "kind": "Storage",
+            "resources": [
+            {
+                "type": "blobServices/containers",
+                "apiVersion": "2019-06-01",
+                "name": "[concat('default/', variables('containerName'))]",
+                "dependsOn": [
+                    "[variables('storageAccountName')]"
+                ]
+            }
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}

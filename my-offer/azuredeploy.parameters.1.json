@@ -1,0 +1,91 @@
+{
+  "location": {
+    "value": "eastus"
+  },
+  "vmssName": {
+    "value": "jbosseap-rhel8-payg-vmss3"
+  },
+  "adminUsername": {
+    "value": "demouser"
+  },
+  "authenticationType": {
+    "value": "password"
+  },
+  "adminPasswordOrSSHKey": {
+    "value": "demoPassword1!"
+  },
+  "vmSize": {
+    "value": "Standard_F4s_v2"
+  },
+  "instanceCount": {
+    "value": "3"
+  },
+  "virtualNetworkNewOrExisting": {
+    "value": "existing"
+  },
+  "virtualNetworkName": {
+    "value": "EXT-RHEL8-VMSS-VNET1"
+  },
+  "addressPrefixes": {
+    "value": [
+      "10.3.0.0/16"
+    ]
+  },
+  "subnetName": {
+    "value": "EXT-RHEL8-VMSS-subnet1"
+  },
+  "subnetPrefix": {
+    "value": "10.3.1.0/24"
+  },
+  "virtualNetworkResourceGroupName": {
+    "value": "Ext-strg-vnet-pip-Rg1"
+  },
+  "publicIpNewOrExisting": {
+    "value": "existing"
+  },
+  "publicIpName": {
+    "value": "EXT-eap72-rhek8-vmss-pip1"
+  },
+  "publicIpDns": {
+    "value": "ext-eap72-rhek8-vmss-pip1"
+  },
+  "publicIpResourceGroupName": {
+    "value": "Ext-strg-vnet-pip-Rg1"
+  },
+  "publicIPAllocationMethod": {
+    "value": "Dynamic"
+  },
+  "publicIpSku": {
+    "value": "Basic"
+  },
+  "bootDiagnostics": {
+    "value": "On"
+  },
+  "storageNewOrExisting": {
+    "value": "existing"
+  },
+  "storageAccountName": {
+    "value": "strgdiagvmss"
+  },
+  "storageAccountType": {
+    "value": "Standard_LRS"
+  },
+  "storageReplication": {
+    "value": "Standard_LRS"
+  },
+  "jbossEAPUserName": {
+    "value": "demouser1"
+  },
+  "jbossEAPPassword": {
+    "value": "demoPassword1!"
+  },
+  "rhsmUserName": {
+    "value": "surajpaispektra"
+  },
+  "rhsmPassword": {
+    "value": "Spektra@123"
+  },
+  "rhsmPoolEAP": {
+    "value": "8a85f99972762fce017299694421706b"
+  }
+}
