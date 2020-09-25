@@ -76,6 +76,27 @@ chkconfig crond on | adddate >> eap.log 2>&1
 echo "@reboot sleep 90 && /bin/jbossservice.sh" >>  /var/spool/cron/root
 chmod 600 /var/spool/cron/root
 
+# Open Red Hat software firewall for port
+echo "Configure firewall for ports" | adddate >> eap.log
+echo "firewall-cmd --zone=public --add-port=8080/tcp --permanent" | adddate >> eap.log
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent | adddate >> eap.log 2>&1
+echo "firewall-cmd --zone=public --add-port=9990/tcp --permanent" | adddate >> eap.log
+sudo firewall-cmd --zone=public --add-port=9990/tcp --permanent | adddate >> eap.log 2>&1
+echo "firewall-cmd --zone=public --add-port=45700/tcp --permanent" | adddate >> eap.log
+sudo firewall-cmd --zone=public --add-port=45700/tcp --permanent | adddate >> eap.log 2>&1
+echo "firewall-cmd --zone=public --add-port=7600/tcp --permanent" | adddate >> eap.log
+sudo firewall-cmd --zone=public --add-port=7600/tcp --permanent | adddate >> eap.log 2>&1
+echo "firewall-cmd --reload" | adddate >> eap.log
+sudo firewall-cmd --reload | adddate >> eap.log 2>&1
+echo "iptables-save" | adddate >> eap.log
+sudo iptables-save | adddate >> eap.log 2>&1
+
+# Open Red Hat software firewall for port 22:
+echo "firewall-cmd --zone=public --add-port=22/tcp --permanent" | adddate >> eap.log
+firewall-cmd --zone=public --add-port=22/tcp --permanent | adddate >> eap.log 2>&1
+echo "firewall-cmd --reload" | adddate >> eap.log
+firewall-cmd --reload | adddate >> eap.log 2>&1
+
 /bin/date +%H:%M:%S >> eap.log
 echo "Configuring JBoss EAP management user" | adddate >> eap.log
 echo "$EAP_HOME/wildfly/bin/add-user.sh -u JBOSS_EAP_USER -p JBOSS_EAP_PASSWORD -g 'guest,mgmtgroup'" | adddate >> eap.log
