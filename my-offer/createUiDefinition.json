@@ -255,6 +255,54 @@
                             "required": true
                         },
                         "visible": true
+                    },
+                    {
+                        "name": "rhsmUserName",
+                        "type": "Microsoft.Compute.UserNameTextBox",
+                        "label": "RedHat Subscription Manager username",
+                        "osPlatform": "Linux",
+                        "constraints": {
+                            "required": true
+                        },
+                        "toolTip": "Provide User name for RedHat subscription Manager"
+                    },
+                    {
+                        "name": "rhsmPassword",
+                        "type": "Microsoft.Common.PasswordBox",
+                        "label": {
+                            "password": "RedHat Subscription Manager password",
+                            "confirmPassword": "Confirm password"
+                        },
+                        "visible": true,
+                        "toolTip":"Provide Password for  RedHat subscription Manager",
+                        "options": {
+                            "hideConfirmation": false
+                        },
+                        "constraints": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "name": "rhsmPoolEAP",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "RHSM Pool ID with EAP entitlement",
+                        "toolTip": "RedHat Subscription Manager Pool ID (Should have EAP entitlement)",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-f0-9A-F]{32}$",
+                            "validationMessage": "The RHSM Pool ID must be 32 characters long and should contain only alphabets between a to f and numbers."
+                        }
+                    },
+                    {
+                        "name": "rhsmPoolRHEL",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "RHSM Pool ID with RHEL entitlement",
+                        "toolTip": "RedHat Subscription Manager Pool ID (Should have RHEL entitlement)",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-f0-9A-F]{32}$",
+                            "validationMessage": "The RHSM Pool ID must be 32 characters long and should contain only alphabets between a to f and numbers."
+                        }
                     }
                 ]
             }
@@ -290,7 +338,10 @@
             "storageReplication": "[steps('VirtualMachineScaleSetConfig').storageReplication]",
             
             "jbossEAPUserName": "[steps('jbossEAPSettings').jbossEAPUserName]",
-            "jbossEAPPassword": "[steps('jbossEAPSettings').jbossEAPPassword]"
+            "jbossEAPPassword": "[steps('jbossEAPSettings').jbossEAPPassword]",
+            "rhsmUserName": "[steps('jbossEAPSettings').rhsmUserName]",
+            "rhsmPassword": "[steps('jbossEAPSettings').rhsmPassword]",
+            "rhsmPoolEAP": "[steps('jbossEAPSettings').rhsmPoolEAP]"
 
         }
     }
