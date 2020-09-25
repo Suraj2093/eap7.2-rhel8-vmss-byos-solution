@@ -11,39 +11,18 @@ export EAP_RPM_CONF_STANDALONE="/etc/opt/rh/eap7/wildfly/eap7-standalone.conf"
 
 JBOSS_EAP_USER=$1
 JBOSS_EAP_PASSWORD=$2
-RHSM_USER=$3
-RHSM_PASSWORD=$4
-RHSM_POOL=$5
 IP_ADDR=$(hostname -I)
-STORAGE_ACCOUNT_NAME=$6
-CONTAINER_NAME=$7
-STORAGE_ACCESS_KEY=$(echo "${8}" | openssl enc -d -base64)
+STORAGE_ACCOUNT_NAME=$3
+CONTAINER_NAME=$4
+STORAGE_ACCESS_KEY=$(echo "${5}" | openssl enc -d -base64)
 
 echo "Initial JBoss EAP 7.2 setup" | adddate >> eap.log
 echo "JBoss EAP admin user: " ${JBOSS_EAP_USER} | adddate >> eap.log
 echo "Storage Account Name: " ${STORAGE_ACCOUNT_NAME} | adddate >> eap.log
 echo "Storage Container Name: " ${CONTAINER_NAME} | adddate >> eap.log
 
-echo "subscription-manager register --username RHSM_USER --password RHSM_PASSWORD" | adddate >> eap.log
-subscription-manager register --username $RHSM_USER --password $RHSM_PASSWORD >> eap.log 2>&1
-flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! Red Hat Subscription Manager Registration Failed" | adddate >> eap.log; exit $flag;  fi
-echo "subscription-manager attach --pool=EAP_POOL" | adddate  >> eap.log
-subscription-manager attach --pool=${RHSM_POOL} >> eap.log 2>&1
-flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! Pool Attach for JBoss EAP Failed" | adddate  >> eap.log; exit $flag;  fi
-echo "Attaching Pool ID for RHEL OS" | adddate >> eap.log
-echo "subscription-manager attach --pool=RHEL_POOL" | adddate >> eap.log
-subscription-manager attach --pool=${9} >> eap.log 2>&1
-echo "Subscribing the system to get access to JBoss EAP 7.2 repos" | adddate >> eap.log
-
-# Install JBoss EAP 7.2
-echo "subscription-manager repos --enable=jb-eap-7.2-for-rhel-8-x86_64-rpms" | adddate >> eap.log
-subscription-manager repos --enable=jb-eap-7.2-for-rhel-8-x86_64-rpms >> eap.log 2>&1
-flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! Enabling repos for JBoss EAP Failed" | adddate >> eap.log; exit $flag;  fi
-
-echo "Installing JBoss EAP 7.2 repos" | adddate >> eap.log
-echo "yum groupinstall -y jboss-eap7" | adddate >> eap.log
-yum groupinstall -y jboss-eap7 >> eap.log 2>&1
-flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! JBoss EAP installation Failed" | adddate >> eap.log; exit $flag;  fi
+systemctl stop eap7-standalone.service
+sleep 20
 
 echo "Copy the standalone-azure-ha.xml from EAP_HOME/doc/wildfly/examples/configs folder to EAP_HOME/wildfly/standalone/configuration folder" | adddate >> eap.log
 echo "cp $EAP_HOME/doc/wildfly/examples/configs/standalone-azure-ha.xml $EAP_HOME/wildfly/standalone/configuration/" | adddate >> eap.log

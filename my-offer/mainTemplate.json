@@ -203,30 +203,6 @@
                 "description": "Password for JBoss EAP Manager"
             }
         },
-        "rhsmUserName": {
-            "type": "string",
-            "metadata": {
-                "description": "User name for Red Hat subscription Manager"
-            }
-        },
-        "rhsmPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Password for Red Hat subscription Manager"
-            }
-        },
-        "rhsmPoolEAP": {
-            "type": "string",
-            "metadata": {
-                "description": "Red Hat Subscription Manager Pool ID (Should have EAP entitlement)"
-            }
-        },
-        "rhsmPoolRHEL": {
-            "type": "string",
-            "metadata": {
-                "description": "Red Hat Subscription Manager Pool ID (Should have RHEL entitlement)"
-            }
-        },
         "_artifactsLocation": {
             "defaultValue": "https://raw.githubusercontent.com/Suraj2093/eap7.2-rhel8-vmss-byos-solution/master/my-offer/",
             "type": "String",
@@ -420,7 +396,7 @@
                                     ]
                                 },
                                 "protectedSettings": {
-                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'),' ', parameters('rhsmUserName'),' ', variables('singlequote'), parameters('rhsmPassword'), variables('singlequote'),' ', parameters('rhsmPoolEAP'),' ', variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', parameters('rhsmPoolRHEL'),' ', variables('singlequote'))]"
+                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'),' ', variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', variables('singlequote'))]"
                                 }
                             }
                         }
