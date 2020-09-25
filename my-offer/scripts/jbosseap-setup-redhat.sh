@@ -30,9 +30,9 @@ flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! Red Hat Subscription Manager Reg
 echo "subscription-manager attach --pool=EAP_POOL" | adddate  >> eap.log
 subscription-manager attach --pool=${RHSM_POOL} >> eap.log 2>&1
 flag=$?; if [ $flag != 0 ] ; then echo  "ERROR! Pool Attach for JBoss EAP Failed" | adddate  >> eap.log; exit $flag;  fi
-echo "Attaching Pool ID for RHEL OS" | adddate >>
-echo "subscription-manager attach --pool=RHEL_POOL" | adddate >>
-subscription-manager attach --pool=${9} >>
+echo "Attaching Pool ID for RHEL OS" | adddate >> eap.log
+echo "subscription-manager attach --pool=RHEL_POOL" | adddate >> eap.log
+subscription-manager attach --pool=${9} >> eap.log 2>&1
 echo "Subscribing the system to get access to JBoss EAP 7.2 repos" | adddate >> eap.log
 
 # Install JBoss EAP 7.2
