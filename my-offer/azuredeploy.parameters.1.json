@@ -47,7 +47,7 @@
     "value": "EAP72-RHEL8-BYOS-VMSS1-ip"
   },
   "publicIpDns": {
-    "value": "eap72-rhel8-byos-vmss1-7732e18e42"
+    "value": "eap72-rhel8-byos-vmss1-9640815ffe"
   },
   "publicIpResourceGroupName": {
     "value": "EAP72-RHEL8-BYOS-VMSS-Rg1"
@@ -62,7 +62,7 @@
     "value": "new"
   },
   "storageAccountName": {
-    "value": "eap72rhefef0ba8495"
+    "value": "eap72rhebe07a7b3ac"
   },
   "storageAccountType": {
     "value": "Standard_LRS"
@@ -83,6 +83,9 @@
     "value": "Spektra@123"
   },
   "rhsmPoolEAP": {
+    "value": "8a85f996710f3b1801716f5db33b3fab"
+  },
+  "rhsmPoolRHEL": {
     "value": "8a85f996710f3b1801716f5db33b3fab"
   }
 }
