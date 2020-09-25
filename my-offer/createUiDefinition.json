@@ -341,7 +341,8 @@
             "jbossEAPPassword": "[steps('jbossEAPSettings').jbossEAPPassword]",
             "rhsmUserName": "[steps('jbossEAPSettings').rhsmUserName]",
             "rhsmPassword": "[steps('jbossEAPSettings').rhsmPassword]",
-            "rhsmPoolEAP": "[steps('jbossEAPSettings').rhsmPoolEAP]"
+            "rhsmPoolEAP": "[steps('jbossEAPSettings').rhsmPoolEAP]",
+            "rhsmPoolRHEL": "[steps('jbossEAPSettings').rhsmPoolRHEL]"
 
         }
     }
