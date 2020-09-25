@@ -28,14 +28,14 @@
   },
   "addressPrefixes": {
     "value": [
-      "10.3.0.0/16"
+      "10.6.0.0/16"
     ]
   },
   "subnetName": {
     "value": "Subnet-1"
   },
   "subnetPrefix": {
-    "value": "10.3.0.0/24"
+    "value": "10.6.0.0/24"
   },
   "virtualNetworkResourceGroupName": {
     "value": "EAP72-RHEL8-BYOS-VMSS-Rg1"
@@ -47,7 +47,7 @@
     "value": "EAP72-RHEL8-BYOS-VMSS1-ip"
   },
   "publicIpDns": {
-    "value": "eap72-rhel8-byos-vmss1-7172d293ef"
+    "value": "eap72-rhel8-byos-vmss1-7732e18e42"
   },
   "publicIpResourceGroupName": {
     "value": "EAP72-RHEL8-BYOS-VMSS-Rg1"
@@ -62,7 +62,7 @@
     "value": "new"
   },
   "storageAccountName": {
-    "value": "eap72rhe9772ad15ad"
+    "value": "eap72rhefef0ba8495"
   },
   "storageAccountType": {
     "value": "Standard_LRS"
@@ -71,9 +71,18 @@
     "value": "Standard_LRS"
   },
   "jbossEAPUserName": {
-    "value": "demouser"
+    "value": "demouser1"
   },
   "jbossEAPPassword": {
     "value": "demoPassword1!"
+  },
+  "rhsmUserName": {
+    "value": "surajpaispektra"
+  },
+  "rhsmPassword": {
+    "value": "Spektra@123"
+  },
+  "rhsmPoolEAP": {
+    "value": "8a85f996710f3b1801716f5db33b3fab"
   }
 }
