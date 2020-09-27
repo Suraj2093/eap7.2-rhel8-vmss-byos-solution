@@ -1,6 +1,6 @@
 {
   "location": {
-    "value": "eastus"
+    "value": "eastus2"
   },
   "vmssName": {
     "value": "EAP72-RHEL8-BYOS-VMSS1"
@@ -24,21 +24,21 @@
     "value": "new"
   },
   "virtualNetworkName": {
-    "value": "VirtualNetwork"
+    "value": "RHL8-VNET"
   },
   "addressPrefixes": {
     "value": [
-      "10.6.0.0/16"
+      "10.1.0.0/16"
     ]
   },
   "subnetName": {
     "value": "Subnet-1"
   },
   "subnetPrefix": {
-    "value": "10.6.0.0/24"
+    "value": "10.1.0.0/24"
   },
   "virtualNetworkResourceGroupName": {
-    "value": "EAP72-RHEL8-BYOS-VMSS-Rg1"
+    "value": "EAP72-RHEL8-byos-VMSS-Soln-Test-Rg1"
   },
   "publicIpNewOrExisting": {
     "value": "new"
@@ -47,10 +47,10 @@
     "value": "EAP72-RHEL8-BYOS-VMSS1-ip"
   },
   "publicIpDns": {
-    "value": "eap72-rhel8-byos-vmss1-9640815ffe"
+    "value": "eap72-rhel8-byos-vmss1-af0102ff90"
   },
   "publicIpResourceGroupName": {
-    "value": "EAP72-RHEL8-BYOS-VMSS-Rg1"
+    "value": "EAP72-RHEL8-byos-VMSS-Soln-Test-Rg1"
   },
   "publicIPAllocationMethod": {
     "value": "Dynamic"
@@ -62,7 +62,7 @@
     "value": "new"
   },
   "storageAccountName": {
-    "value": "eap72rhebe07a7b3ac"
+    "value": "eap72rhedd273c65ea"
   },
   "storageAccountType": {
     "value": "Standard_LRS"
@@ -75,17 +75,5 @@
   },
   "jbossEAPPassword": {
     "value": "demoPassword1!"
-  },
-  "rhsmUserName": {
-    "value": "surajpaispektra"
-  },
-  "rhsmPassword": {
-    "value": "Spektra@123"
-  },
-  "rhsmPoolEAP": {
-    "value": "8a85f996710f3b1801716f5db33b3fab"
-  },
-  "rhsmPoolRHEL": {
-    "value": "8a85f996710f3b1801716f5db33b3fab"
   }
 }
