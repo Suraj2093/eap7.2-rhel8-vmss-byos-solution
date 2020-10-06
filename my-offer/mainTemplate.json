@@ -204,7 +204,7 @@
             }
         },
         "_artifactsLocation": {
-            "defaultValue": "https://raw.githubusercontent.com/Suraj2093/eap7.2-rhel8-vmss-byos-solution/master/my-offer/",
+            "defaultValue": "[deployment().properties.templateLink.uri]",
             "type": "String",
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated"
@@ -230,6 +230,9 @@
         "publicIpAddressId": {
             "id": "[resourceId(parameters('publicIpResourceGroupName'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
         },
+        "subnetId" : {
+            "id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('subnetName'))]"
+        },
         "loadBalancersName": "jbosseap-lb",
         "backendPoolName": "jbosseap-server",
         "natPoolName1": "natpool1",
@@ -242,6 +245,10 @@
         "natEndPort2": 9120,
         "adminBackendPort": 9990,
         "healthProbe" : "eap-lb-health",
+        "networkSecurityGroupName": "jbosseap-nsg",
+        "networkSecurityGroupId": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        },
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -255,6 +262,19 @@
         }
     },
     "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "name": "pid-79289471-45ce-45d0-a4d9-413d011c217c",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
         {
             "condition": "[variables('bootdiagnosticscheck')]",
             "type": "Microsoft.Storage/storageAccounts",
@@ -280,6 +300,56 @@
                 "dnsSettings": {
                     "domainNameLabel": "[parameters('publicIpDns')]"
                 }
+            }
+        },
+        {
+            "condition": "[equals(parameters('publicIpSku'), 'Standard')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('networkSecurityGroupName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                {
+                    "name": "Port_8080",
+                    "properties": {
+                        "priority": 350,
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "destinationPortRange": "8080",
+                        "protocol": "Tcp",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*"
+                    }
+                },
+                {
+                    "name": "default-allow-22",
+                    "properties": {
+                        "priority": 340,
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "destinationPortRange": "22",
+                        "protocol": "Tcp",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*"
+                    }
+                },
+                {
+                    "name": "http_9990",
+                    "properties": {
+                        "priority": 360,
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "destinationPortRange": "9990",
+                        "protocol": "Tcp",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*"
+                    }
+                }
+                ]
             }
         },
         {
@@ -321,7 +391,8 @@
                 "[variables('loadBalancersName')]",
                 "[parameters('virtualNetworkName')]",
                 "[variables('storageAccountName')]",
-                "[if(equals(parameters('bootDiagnostics'),'On'), parameters('storageAccountName'), parameters('virtualNetworkName'))]"
+                "[if(equals(parameters('bootDiagnostics'),'On'), parameters('storageAccountName'), parameters('virtualNetworkName'))]",
+                "[if(equals(parameters('publicIpSku'),'Standard'), variables('networkSecurityGroupName'), variables('storageAccountName'))]"
             ],
             "properties": {
                 "overprovision": "false",
@@ -357,9 +428,7 @@
                                 {
                                     "name": "ipconfig",
                                     "properties": {
-                                        "subnet": {
-                                            "id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('subnetName'))]"
-                                        },
+                                        "subnet": "[variables('subnetId')]",
                                         "loadBalancerBackendAddressPools": [
                                         {
                                             "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancersName'), variables('backendPoolName'))]"
@@ -375,7 +444,8 @@
                                         ]
                                     }
                                 }
-                                ]
+                                ],
+                                "networkSecurityGroup": "[if(equals(parameters('publicIpSku'), 'Standard'), variables('networkSecurityGroupId') , json('null'))]"
                             }
                         }
                         ]
@@ -410,12 +480,12 @@
             "apiVersion": "2019-11-01",
             "name": "[variables('loadBalancersName')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "[parameters('publicIpName')]"
-            ],
             "sku": {
-                "name": "Basic"
+                "name": "[parameters('publicIpSku')]"
             },
+            "dependsOn": [
+                "[if(equals(parameters('publicIpNewOrExisting'),'none'), parameters('virtualNetworkName'), parameters('publicIpName'))]"
+            ],
             "properties": {
                 "frontendIPConfigurations": [
                 {
@@ -423,6 +493,7 @@
                     "properties": {
                         "privateIPAllocationMethod": "Dynamic",
                         "publicIPAddress": "[if(not(equals(parameters('publicIpNewOrExisting'), 'none')), variables('publicIpAddressId') , json('null'))]",
+                        "subnet": "[if(equals(parameters('publicIpNewOrExisting'), 'none'), variables('subnetId') , json('null'))]",
                         "privateIPAddressVersion": "IPv4"
                     }
  
