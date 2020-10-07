@@ -219,11 +219,8 @@
         }
     },
     "variables": {
-        "scriptFileName": "jbosseap-setup-redhat.sh",
         "containerName": "eapblobcontainer",
         "singlequote": "'",
-        "scriptStart": "su -c'sh ",
-        "customScriptCommand": "[concat(variables('scriptStart'), variables('scriptFileName'), ' ')]",
         "nicName": "[concat(uniquestring(resourceGroup().id), '-nic')]",
         "bootdiagnosticscheck": "[and(equals(parameters('storageNewOrExisting'), 'new'), equals(parameters('bootDiagnostics'),'On'))]",
         "storageAccountName": "[concat('jbosstrg', uniqueString(resourceGroup().id))]",
@@ -466,7 +463,7 @@
                                     ]
                                 },
                                 "protectedSettings": {
-                                    "commandToExecute": "[concat(variables('customScriptCommand'),' ', parameters('jbossEAPUserName'),' ', variables('singlequote'), parameters('jbossEAPPassword'), variables('singlequote'),' ', variables('storageAccountName'),' ', variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value),' ', variables('singlequote'))]"
+                                    "commandToExecute": "[concat('sh jbosseap-setup-redhat.sh',' ',parameters('jbossEAPUserName'),' ',variables('singlequote'),parameters('jbossEAPPassword'),variables('singlequote'),' ',variables('storageAccountName'),' ',variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value))]"
                                 }
                             }
                         }
