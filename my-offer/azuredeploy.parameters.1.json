@@ -3,22 +3,22 @@
     "value": "westus"
   },
   "vmssName": {
-    "value": "EAP72-RHEL8-BYOS-VMSS2"
+    "value": "EAP72-RHEL8-BYOS-VMSS3"
   },
   "adminUsername": {
-    "value": "demouser"
+    "value": "demoUser"
   },
   "authenticationType": {
-    "value": "password"
+    "value": "sshPublicKey"
   },
   "adminPasswordOrSSHKey": {
-    "value": "demoPassword1!"
+    "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA059D0hIn2nF320wj1f5HobremXWx/W/ss9lGvHcaarWHlqoMeg2uXyoZTa74pK3AQVJG8dl0mTDZHIhKylUiDwCpmNxD8Ybao0ZwP3S6nEbR9z7DTvpzH/HbhBer8PdJ3aU3NpPHxuWzmnpjUR6I0RmmDp9tQM08ObPS4vzClNs4KM1NirYzp42EOcHI4yRq+7ypNvIgJLh+sQb503HzD9sXby4A1/CJ4UdfGbzRoZ1Mq2p6aWlHs77gbt9khZcGKAXf0/ofJCRj25e/VqNQJomcPJq61Ez038C5JRQERt2h+1EiLaOc1xhormKnubGzaWgVWQdZDs4RQ7pU/SEpJQ== rsa-key-20201016"
   },
   "vmSize": {
-    "value": "Standard_DS2_v2"
+    "value": "Standard_F8s_v2"
   },
   "instanceCount": {
-    "value": "3"
+    "value": "2"
   },
   "virtualNetworkNewOrExisting": {
     "value": "existing"
@@ -32,42 +32,54 @@
     ]
   },
   "subnetName": {
-    "value": "EXT-subnet-Rg1"
+    "value": "EXt-new-subnet3"
   },
   "subnetPrefix": {
-    "value": "10.3.0.0/24"
+    "value": "10.3.2.0/24"
   },
   "virtualNetworkResourceGroupName": {
     "value": "EXt-Resource-Rg1"
   },
-  "publicIpNewOrExisting": {
-    "value": "new"
+  "publicIpNewOrExistingOrNone": {
+    "value": "none"
   },
   "publicIpName": {
-    "value": "EAP72-RHEL8-VMSS2-STD-pip1"
+    "value": ""
   },
   "publicIpDns": {
-    "value": "eap72-rhel8-byos-vmss2-stdrh2"
+    "value": ""
   },
   "publicIpResourceGroupName": {
-    "value": "EAP72-RHEL8-byos-VMSS-Soln-Test-Rg2"
+    "value": ""
   },
   "publicIPAllocationMethod": {
-    "value": "Static"
+    "value": ""
   },
   "publicIpSku": {
-    "value": "Standard"
+    "value": ""
   },
   "bootDiagnostics": {
-    "value": "Off"
+    "value": "On"
+  },
+  "storageNewOrExisting": {
+    "value": "new"
+  },
+  "storageAccountName": {
+    "value": "diageap72rhel8v2lrsbyos"
+  },
+  "storageAccountType": {
+    "value": "Standard_LRS"
+  },
+  "storageAccountKind": {
+    "value": "StorageV2"
   },
   "storageReplication": {
-    "value": "Standard_LRS"
+    "value": "Standard_GRS"
   },
   "jbossEAPUserName": {
     "value": "demouser1"
   },
   "jbossEAPPassword": {
-    "value": "demoPassword1!"
+    "value": "demoPassword1&"
   }
 }
