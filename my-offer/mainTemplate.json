@@ -83,6 +83,13 @@
                 "description": "Storage account type"
             }
         },
+        "storageAccountKind": {
+            "defaultValue": "Storage",
+            "type": "String",
+            "metadata": {
+                "description": "Storage account kind"
+            }
+        },
         "storageReplication": {
             "type": "string",
             "defaultValue": "Standard_LRS",
@@ -141,7 +148,7 @@
                 "description": "Name of the resource group for the existing virtual network"
             }
         },
-        "publicIpNewOrExisting": {
+        "publicIpNewOrExistingOrNone": {
             "defaultValue": "new",
             "type": "String",
             "metadata": {
@@ -171,10 +178,6 @@
         },
         "publicIPAllocationMethod": {
             "defaultValue": "Dynamic",
-            "allowedValues": [
-                "Dynamic",
-                "Static"
-            ],
             "type": "String",
             "metadata": {
                 "description": "Allocation method for the public ip address"
@@ -182,10 +185,6 @@
         },
         "publicIpSku": {
             "defaultValue": "Basic",
-            "allowedValues": [
-                "Basic",
-                "Standard"
-            ],
             "type": "String",
             "metadata": {
                 "description": "Name of the resource group for the public ip address"
@@ -281,16 +280,16 @@
             "sku": {
                 "name": "[parameters('storageAccountType')]"
             },
-            "kind": "Storage"
+            "kind": "[parameters('storageAccountKind')]"
         },
         {
-            "condition": "[equals(parameters('publicIpNewOrExisting'), 'new')]",
+            "condition": "[equals(parameters('publicIpNewOrExistingOrNone'), 'new')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
-            "name": "[parameters('publicIpName')]",
+            "name": "[if(equals(parameters('publicIpNewOrExistingOrNone'),'none'), 'PublicIp', parameters('publicIpName'))]",
             "location": "[parameters('location')]",
             "sku": {
-                "name": "[parameters('publicIpSku')]"
+                "name": "[if(equals(parameters('publicIpSku'), 'Standard'), 'Standard' , 'Basic')]"
             },
             "properties": {
                 "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
@@ -478,10 +477,10 @@
             "name": "[variables('loadBalancersName')]",
             "location": "[parameters('location')]",
             "sku": {
-                "name": "[parameters('publicIpSku')]"
+                "name": "[if(equals(parameters('publicIpSku'), 'Standard'), 'Standard' , 'Basic')]"
             },
             "dependsOn": [
-                "[if(equals(parameters('publicIpNewOrExisting'),'none'), parameters('virtualNetworkName'), parameters('publicIpName'))]"
+                "[if(equals(parameters('publicIpNewOrExistingOrNone'),'none'), parameters('virtualNetworkName'), parameters('publicIpName'))]"
             ],
             "properties": {
                 "frontendIPConfigurations": [
@@ -489,8 +488,8 @@
                     "name": "[variables('frontendName')]",
                     "properties": {
                         "privateIPAllocationMethod": "Dynamic",
-                        "publicIPAddress": "[if(not(equals(parameters('publicIpNewOrExisting'), 'none')), variables('publicIpAddressId') , json('null'))]",
-                        "subnet": "[if(equals(parameters('publicIpNewOrExisting'), 'none'), variables('subnetId') , json('null'))]",
+                        "publicIPAddress": "[if(not(equals(parameters('publicIpNewOrExistingOrNone'), 'none')), variables('publicIpAddressId') , json('null'))]",
+                        "subnet": "[if(equals(parameters('publicIpNewOrExistingOrNone'), 'none'), variables('subnetId') , json('null'))]",
                         "privateIPAddressVersion": "IPv4"
                     }
  

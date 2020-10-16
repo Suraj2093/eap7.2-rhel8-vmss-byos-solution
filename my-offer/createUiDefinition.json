@@ -22,9 +22,7 @@
                 "toolTip": "Linux VMSS instance user account name",
                 "osPlatform": "Linux",
                 "constraints": {
-                    "required": true,
-                    "regex": "^[a-zA-Z]+[a-zA-Z0-9_-]{1,64}$",
-                    "validationMessage": "The value must be between 1 and 64 characters long and must only contain letters, numbers, hyphens, and underscores and may not start with a hyphen or number."
+                    "required": true
                 }
             },
             {
@@ -86,8 +84,8 @@
                         "toolTip": "Number of Virtual Machine Scale Set instance count (less than 100)",
                         "constraints": {
                             "required": true,
-                            "regex": "^[0-9]{1,2}$",
-                            "validationMessage": "The VMSS instance count must be an integer value less than 100."
+                            "regex": "^[1-9][0-9]{0,1}$",
+                            "validationMessage": "The VMSS instance count recommended value is between 2 to 100."
                         }
                     },
                     {
@@ -276,7 +274,7 @@
             "subnetPrefix": "[steps('VirtualMachineScaleSetConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
             "virtualNetworkResourceGroupName": "[steps('VirtualMachineScaleSetConfig').virtualNetwork.resourceGroup]",
 
-            "publicIpNewOrExisting": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.newOrExistingOrNone]",
+            "publicIpNewOrExistingOrNone": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.newOrExistingOrNone]",
             "publicIpName": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.name]",
             "publicIpDns": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.domainNameLabel]",
             "publicIpResourceGroupName": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.resourceGroup]",
@@ -287,6 +285,7 @@
             "storageNewOrExisting": "[steps('VirtualMachineScaleSetConfig').storageAccountType.newOrExisting]",
             "storageAccountName": "[steps('VirtualMachineScaleSetConfig').storageAccountType.name]",
             "storageAccountType": "[steps('VirtualMachineScaleSetConfig').storageAccountType.type]",
+            "storageAccountKind": "[steps('VirtualMachineScaleSetConfig').storageAccountType.kind]",
             "storageReplication": "[steps('VirtualMachineScaleSetConfig').storageReplication]",
             
             "jbossEAPUserName": "[steps('jbossEAPSettings').jbossEAPUserName]",
