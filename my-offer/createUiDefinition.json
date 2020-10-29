@@ -207,10 +207,6 @@
                                 {
                                     "label": "Read-Access geo-redundant Storage (RAGRS)",
                                     "value": "Standard_RAGRS"
-                                },
-                                {
-                                    "label": "Locally-redundant Storage (Premium_LRS)",
-                                    "value": "Premium_LRS"
                                 }
                             ],
                             "required": true
