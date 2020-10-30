@@ -221,7 +221,7 @@
         "singlequote": "'",
         "nicName": "[concat(uniquestring(resourceGroup().id), '-nic')]",
         "bootdiagnosticscheck": "[and(equals(parameters('storageNewOrExisting'), 'new'), equals(parameters('bootDiagnostics'),'On'))]",
-        "storageAccountName": "[concat('jbosstrg', uniqueString(resourceGroup().id))]",
+        "jbStorageAccountName": "[concat('jbosstrg', uniqueString(resourceGroup().id))]",
         "publicIpAddressId": {
             "id": "[resourceId(parameters('publicIpResourceGroupName'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
         },
@@ -385,9 +385,9 @@
             "dependsOn": [
                 "[variables('loadBalancersName')]",
                 "[parameters('virtualNetworkName')]",
-                "[variables('storageAccountName')]",
+                "[variables('jbStorageAccountName')]",
                 "[if(equals(parameters('bootDiagnostics'),'On'), parameters('storageAccountName'), parameters('virtualNetworkName'))]",
-                "[if(equals(parameters('publicIpSku'),'Standard'), variables('networkSecurityGroupName'), variables('storageAccountName'))]"
+                "[if(equals(parameters('publicIpSku'),'Standard'), variables('networkSecurityGroupName'), variables('jbStorageAccountName'))]"
             ],
             "properties": {
                 "overprovision": "false",
@@ -461,7 +461,7 @@
                                     ]
                                 },
                                 "protectedSettings": {
-                                    "commandToExecute": "[concat('sh jbosseap-setup-redhat.sh',' ',parameters('jbossEAPUserName'),' ',variables('singlequote'),parameters('jbossEAPPassword'),variables('singlequote'),' ',variables('storageAccountName'),' ',variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value))]"
+                                    "commandToExecute": "[concat('sh jbosseap-setup-redhat.sh',' ',parameters('jbossEAPUserName'),' ',variables('singlequote'),parameters('jbossEAPPassword'),variables('singlequote'),' ',variables('jbStorageAccountName'),' ',variables('containerName'),' ',base64(listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('jbStorageAccountName')), '2019-04-01').keys[0].value))]"
                                 }
                             }
                         }
@@ -563,7 +563,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
-            "name": "[variables('storageAccountName')]",
+            "name": "[variables('jbStorageAccountName')]",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('storageReplication')]"
@@ -575,7 +575,7 @@
                 "apiVersion": "2019-06-01",
                 "name": "[concat('default/', variables('containerName'))]",
                 "dependsOn": [
-                    "[variables('storageAccountName')]"
+                    "[variables('jbStorageAccountName')]"
                 ]
             }
             ]
