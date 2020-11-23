@@ -80,12 +80,13 @@
                     {
                         "name": "instanceCount",
                         "type": "Microsoft.Common.TextBox",
+                        "defaultValue": "2",
                         "label": "Number of Virtual Machine Scale Set instance count",
-                        "toolTip": "Number of Virtual Machine Scale Set instance count (less than 100)",
+                        "toolTip": "Number of Virtual Machine Scale Set instance count (less than 1000)",
                         "constraints": {
                             "required": true,
-                            "regex": "^[1-9][0-9]{0,1}$",
-                            "validationMessage": "The VMSS instance count recommended value is between 2 to 100."
+                            "regex": "^[1-9][0-9]{0,2}$",
+                            "validationMessage": "The VMSS instance count recommended value is between 2 to 1000."
                         }
                     },
                     {
@@ -124,6 +125,7 @@
                     {
                         "name": "publicIpAddress",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "visible": "[less(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]",
                         "label": {
                             "publicIpAddress": "Public IP Address for the Load Balancer",
                             "domainNameLabel": "DNS Prefix for the public IP Address"
@@ -144,6 +146,19 @@
                             "required": {
                                 "domainNameLabel": true
                             }
+                        }
+                    },
+                    {
+                        "name": "publicIpAddressNew",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Public IP Name for the Load Balancer",
+                        "toolTip": "Public IP Name for the Load Balancer",
+                        "visible": "[greaterOrEquals(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]",
+                        "defaultValue": "[concat(basics('vmssName'), '-ip')]",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z][a-z0-9A-Z._-]{0,75}[a-z0-9A-Z_]{1}$",
+                            "validationMessage": "The name must begin with a letter or number, end with a letter, number or underscore, and may contain only letters, numbers, underscores, periods, or hyphens."
                         }
                     },
                     {
@@ -276,6 +291,7 @@
             "publicIpResourceGroupName": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.resourceGroup]",
             "publicIPAllocationMethod": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.publicIPAllocationMethod]",
             "publicIpSku": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.sku]",
+            "publicIpNameNew": "[steps('VirtualMachineScaleSetConfig').publicIpAddressNew]",
 
             "bootDiagnostics": "[steps('VirtualMachineScaleSetConfig').bootDiagnostics]",
             "storageNewOrExisting": "[steps('VirtualMachineScaleSetConfig').storageAccountType.newOrExisting]",
