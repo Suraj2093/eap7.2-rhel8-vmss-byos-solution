@@ -148,7 +148,7 @@
             }
         },
         "publicIpNewOrExistingOrNone": {
-            "defaultValue": "new",
+            "defaultValue": "none",
             "type": "String",
             "metadata": {
                 "description": "Determines whether or not a new public ip should be provisioned."
@@ -187,6 +187,13 @@
             "type": "String",
             "metadata": {
                 "description": "Name of the resource group for the public ip address"
+            }
+        },
+        "loadBalancerType": {
+            "defaultValue": "Private",
+            "type": "String",
+            "metadata": {
+                "description": "Type of Laod Balancer when the instance count is more than 100"
             }
         },
         "publicIpNameNew": {
@@ -229,9 +236,12 @@
         "nicName": "[concat(uniquestring(resourceGroup().id), '-nic')]",
         "vmssInstanceCount": "[int(parameters('instanceCount'))]",
         "bootDiagnosticsCheck": "[and(equals(parameters('storageNewOrExisting'), 'new'), equals(parameters('bootDiagnostics'),'On'))]",
-        "publicIpSkuCheck": "[or(equals(parameters('publicIpSku'), 'Standard'), greaterOrEquals(variables('vmssInstanceCount'), 100))]",
-        "publicIPAllocationMethodCheck": "[or(equals(parameters('publicIPAllocationMethod'), 'Static'), greaterOrEquals(variables('vmssInstanceCount'), 100))]",
-        "instanceCountCheck": "[greaterOrEquals(variables('vmssInstanceCount'), 100)]",
+        "publicIpOrNone": "[if(not(equals(parameters('publicIpNewOrExistingOrNone'), 'none')), 'PublicIP' , 'none')]",
+        "publicIpNewCheck": "[or(equals(parameters('publicIpNewOrExistingOrNone'), 'new'), equals(parameters('loadBalancerType'), 'Public'))]",
+        "publicIpCheck": "[and(equals(variables('publicIpOrNone'), 'none'), equals(parameters('loadBalancerType'), 'Private'))]",
+        "publicIpSkuCheck": "[or(equals(parameters('publicIpSku'), 'Standard'), greaterOrEquals(variables('vmssInstanceCount'), 101))]",
+        "publicIPAllocationMethodCheck": "[or(equals(parameters('publicIPAllocationMethod'), 'Static'), greaterOrEquals(variables('vmssInstanceCount'), 101))]",
+        "instanceCountCheck": "[greaterOrEquals(variables('vmssInstanceCount'), 101)]",
         "jbStorageAccountName": "[concat('jbosstrg', uniqueString(resourceGroup().id))]",
         "publicIpNameCheck": "[if(equals(variables('instanceCountCheck'), bool('true')), parameters('publicIpNameNew') , parameters('publicIpName'))]",
         "publicIpAddressId": {
@@ -294,10 +304,10 @@
             "kind": "[parameters('storageAccountKind')]"
         },
         {
-            "condition": "[equals(parameters('publicIpNewOrExistingOrNone'), 'new')]",
+            "condition": "[variables('publicIpNewCheck')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
-            "name": "[if(equals(parameters('publicIpNewOrExistingOrNone'),'none'), 'PublicIp', variables('publicIpNameCheck'))]",
+            "name": "[if(equals(variables('publicIpCheck'), bool('true')), 'PublicIp', variables('publicIpNameCheck'))]",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "[if(equals(variables('publicIpSkuCheck'), bool('true')), 'Standard' , 'Basic')]"
@@ -403,7 +413,6 @@
             ],
             "properties": {
                 "singlePlacementGroup": "[if(equals(variables('instanceCountCheck'), bool('true')), 'false' , 'true')]",
-                "overprovision": "false",
                 "upgradePolicy": {
                     "mode": "Manual"
                 },
@@ -492,7 +501,7 @@
                 "name": "[if(equals(variables('publicIpSkuCheck'), bool('true')), 'Standard' , 'Basic')]"
             },
             "dependsOn": [
-                "[if(equals(parameters('publicIpNewOrExistingOrNone'),'none'), parameters('virtualNetworkName'), variables('publicIpNameCheck'))]"
+                "[if(equals(variables('publicIpCheck'), bool('true')), parameters('virtualNetworkName'), variables('publicIpNameCheck'))]"
             ],
             "properties": {
                 "frontendIPConfigurations": [
@@ -500,8 +509,8 @@
                     "name": "[variables('frontendName')]",
                     "properties": {
                         "privateIPAllocationMethod": "Dynamic",
-                        "publicIPAddress": "[if(not(equals(parameters('publicIpNewOrExistingOrNone'), 'none')), variables('publicIpAddressId') , json('null'))]",
-                        "subnet": "[if(equals(parameters('publicIpNewOrExistingOrNone'), 'none'), variables('subnetId') , json('null'))]",
+                        "publicIPAddress": "[if(equals(variables('publicIpCheck'), bool('false')), variables('publicIpAddressId') , json('null'))]",
+                        "subnet": "[if(equals(variables('publicIpCheck'), bool('true')), variables('subnetId') , json('null'))]",
                         "privateIPAddressVersion": "IPv4"
                     }
  

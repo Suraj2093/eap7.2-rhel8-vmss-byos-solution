@@ -125,7 +125,7 @@
                     {
                         "name": "publicIpAddress",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "visible": "[less(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]",
+                        "visible": "[lessOrEquals(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]",
                         "label": {
                             "publicIpAddress": "Public IP Address for the Load Balancer",
                             "domainNameLabel": "DNS Prefix for the public IP Address"
@@ -149,11 +149,32 @@
                         }
                     },
                     {
+                        "name": "lbType",
+                        "type": "Microsoft.Common.OptionsGroup",
+                        "label": "Load Balancer Type",
+                        "defaultValue": "Private",
+                        "toolTip": "Select the type of Load Balancer you want to deploy",
+                        "constraints": {
+                          "allowedValues": [
+                            {
+                              "label": "Private",
+                              "value": "Private"
+                            },
+                            {
+                              "label": "Public",
+                              "value": "Public"
+                            }
+                          ],
+                          "required": true
+                        },
+                        "visible": "[greater(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]"
+                    },
+                    {
                         "name": "publicIpAddressNew",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Public IP Name for the Load Balancer",
                         "toolTip": "Public IP Name for the Load Balancer",
-                        "visible": "[greaterOrEquals(int(steps('VirtualMachineScaleSetConfig').instanceCount), 100)]",
+                        "visible": "[equals(steps('VirtualMachineScaleSetConfig').lbType, 'Public')]",
                         "defaultValue": "[concat(basics('vmssName'), '-ip')]",
                         "constraints": {
                             "required": true,
@@ -291,6 +312,7 @@
             "publicIpResourceGroupName": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.resourceGroup]",
             "publicIPAllocationMethod": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.publicIPAllocationMethod]",
             "publicIpSku": "[steps('VirtualMachineScaleSetConfig').publicIpAddress.sku]",
+            "loadBalancerType": "[steps('VirtualMachineScaleSetConfig').lbType]",
             "publicIpNameNew": "[steps('VirtualMachineScaleSetConfig').publicIpAddressNew]",
 
             "bootDiagnostics": "[steps('VirtualMachineScaleSetConfig').bootDiagnostics]",
